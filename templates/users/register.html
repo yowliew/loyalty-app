@@ -1,0 +1,84 @@
+{% extends "base.html" %} {% block content %}
+<div class="form">
+	<!--    <form action="{{ url_for('users.login_user') }}" method="post"> -->
+	<form>
+		<div class="form-group">
+			<label for="dealercode">Dealer Code :</label>
+			<input
+				type="text"
+				class="form-control"
+				id="dealercode"
+				name="dealercode"
+				disabled
+			/>
+			<label for="username">User Name :</label>
+			<input
+				type="text"
+				class="form-control"
+				id="username"
+				name="username"
+				placeholder="Mary Jane.."
+			/>
+			<label for="password">Password :</label>
+			<input
+				type="password"
+				class="form-control"
+				name="password"
+				id="password"
+				placeholder="Password"
+			/>
+			<br />
+			<div class="form-group">
+				<button type="submit" id="register" class="btn btn-primary">
+					Register
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="/static/js/jquery-3.5.0.js"></script>
+
+<script>
+	$(document).ready(function () {
+		var dealercode = $('#dealercode');
+
+		$.ajax({
+			type: 'GET',
+			url: '/user_register',
+			success: function (data) {
+				dealercode.val(data.dealer_code);
+			},
+			error: function () {
+				alert('Error loading Dealer Code');
+			},
+		});
+
+		$('#register').click(function () {
+			var info = {
+				username: $('#username').val(),
+				password: $('#password').val(),
+				dealer_code: $('#dealercode').val(),
+			};
+
+			$.ajax({
+				type: 'POST',
+				url: '/user_register',
+				data: info,
+				success: function (savedInfo, textStatus, jqXHR) {
+					alert('Message : ' + savedInfo.message);
+					// alert(textStatus + '  ' + jqXHR.status);
+				},
+				error: function (jqHXR, textStatus, errorThrown) {
+					alert('Error creating new user');
+					alert(textStatus + ' : ' + jqXHR.status + ' ' + errorThrown);
+				},
+			});
+			$('#username').val('');
+			$('#password').val('');
+
+			event.preventDefault();
+		});
+	});
+</script>
+
+{% endblock %}
