@@ -7,15 +7,24 @@ from common.db import db1
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
+
     parser.add_argument("username", type=str, required=True, help="Username Error.")
     parser.add_argument("password", type=str, required=True, help="Password Error.")
     parser.add_argument("dealer_code", type=str, required=True, help="Dealer code Error.")
+
+    # parser.add_argument("username", type=str, required=True, help="Error: {error_msg}")
+    # parser.add_argument("password", type=str, required=True, help="Password Error.")
+    # parser.add_argument("dealer_code", type=str, required=True, help="Dealer code Error.")
+    #
+    # {
+    #     "message": {"username": "Error : Username is not a valid choice"}
+    # }
 
     def post(self):
         data = self.parser.parse_args()
 
         if UserModel.find_by_username(data["username"]):
-            return jsonify({"message": "User already exist in the database"})
+            return jsonify({"message": "User already exist in the database."})
 
         user = UserModel(**data)
         user.save_to_db()

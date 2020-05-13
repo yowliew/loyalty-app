@@ -1,42 +1,53 @@
 {% extends "base.html" %} {% block content %}
-<div class="form">
-	<!--    <form action="{{ url_for('users.login_user') }}" method="post"> -->
-	<form>
-		<div class="form-group">
-			<label for="dealercode">Dealer Code :</label>
-			<input
-				type="text"
-				class="form-control"
-				id="dealercode"
-				name="dealercode"
-				disabled
-			/>
-			<label for="username">User Name :</label>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trxstyle.css') }}" />
+<div class="form-header">
+	<p>Register New User</p>
+</div>
+
+<div class="form" method="post">
+	<form class="form-trx">
+		<div class="form-label-group form-group">
+			<input type="text" class="form-control" id="dealercode" name="dealercode" disabled />
+			<label for="dealercode">Dealer Code</label>
+		</div>
+
+		<div class="form-label-group form-group">
 			<input
 				type="text"
 				class="form-control"
 				id="username"
 				name="username"
-				placeholder="Mary Jane.."
+				maxlength="10"
+				required
+				onblur="if(this.value != '') callAjax(this.id, this.value);"
 			/>
-			<label for="password">Password :</label>
+			<label for="username">UserName</label>
+		</div>
+
+		<div class="form-label-group form-group">
 			<input
 				type="password"
 				class="form-control"
 				name="password"
 				id="password"
-				placeholder="Password"
+				maxlength="10"
+				required
+				onblur="if(this.value != '') callAjax(this.id, this.value);"
 			/>
-			<br />
-			<div class="form-group">
-				<button type="submit" id="register" class="btn btn-primary">
-					Register
-				</button>
-			</div>
+			<label for="password">Password</label>
+		</div>
+		<br />
+		<div class="form-group">
+			<button type="submit" id="register" class="btn btn-info">
+				Register
+			</button>
 		</div>
 	</form>
 </div>
+
 <script src="/static/js/jquery-3.5.0.js"></script>
+<script src="/static/js/utils.js"></script>
 
 <script>
 	$(document).ready(function () {
@@ -49,11 +60,18 @@
 				dealercode.val(data.dealer_code);
 			},
 			error: function () {
-				alert('Error loading Dealer Code');
+				showMsg('Error loading Dealer Code');
 			},
 		});
 
 		$('#register').click(function () {
+			event.preventDefault();
+
+			if (checkForm($('form')) || toStop) {
+				toStop = false;
+				return;
+			}
+
 			var info = {
 				username: $('#username').val(),
 				password: $('#password').val(),
@@ -65,20 +83,37 @@
 				url: '/user_register',
 				data: info,
 				success: function (savedInfo, textStatus, jqXHR) {
-					alert('Message : ' + savedInfo.message);
+					showMsg(savedInfo.message);
 					// alert(textStatus + '  ' + jqXHR.status);
 				},
 				error: function (jqHXR, textStatus, errorThrown) {
-					alert('Error creating new user');
-					alert(textStatus + ' : ' + jqXHR.status + ' ' + errorThrown);
+					showMsg(jqXHR.status + ' ' + errorThrown);
 				},
 			});
 			$('#username').val('');
 			$('#password').val('');
-
-			event.preventDefault();
 		});
 	});
+
+	function checkForm(form) {
+		if (this.dealercode.value == '') {
+			showMsg('Check the setup. There must be one default dealer in the system.');
+			this.username.focus();
+			return true;
+		}
+
+		if (this.username.value == '') {
+			showMsg('Please enter your Name.');
+			this.username.focus();
+			return true;
+		}
+		if (this.password.value == '') {
+			showMsg('Please enter your Password.');
+			this.password.focus();
+			return true;
+		}
+		return false;
+	}
 </script>
 
 {% endblock %}

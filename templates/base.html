@@ -1,53 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Loyalty</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+	</head>
 
-<head>
-    <title>Price Alerts</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-</head>
+	<body>
+		<div
+			class="modal fade"
+			id="staticBackdrop"
+			data-backdrop="static"
+			tabindex="-1"
+			role="dialog"
+			aria-labelledby="staticBackdrop"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header bg-secondary text-light">
+						<h5 class="modal-title" id="staticBackdrop">Message</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body font-weight-normal text-info"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-<body>
+		<div id="title">
+			<p class="text-uppercase"></p>
+		</div>
+		<div class="content container-fluid">
+			<nav class="navbar navbar-expand-lg font-weight-bold navbar-dark bg-danger mb-1">
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-toggle="collapse"
+					data-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<a class="navbar-brand" href="{{ url_for('loyalty.the_base') }}"
+					><img src="{{ url_for('static', filename='jpg/shell.jpg') }}" width="45" height="40" alt=""
+				/></a>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item dropdown">
+							<a
+								class="nav-link dropdown-toggle"
+								href="#"
+								id="SetupMenuLink"
+								role="button"
+								data-toggle="dropdown"
+								aria-haspopup="true"
+								aria-expanded="false"
+							>
+								Setup
+							</a>
+							<div class="dropdown-menu" aria-labelledby="SetupMenuLink">
+								<a class="dropdown-item" href="{{ url_for('users.register_user') }}">New User</a>
+								<a class="dropdown-item" href="{{ url_for('dealers.register_dealer') }}">New Dealer</a>
+							</div>
+						</li>
+						<li class="nav-item dropdown">
+							<a
+								class="nav-link dropdown-toggle"
+								href="#"
+								id="TrxMenuLink"
+								role="button"
+								data-toggle="dropdown"
+								aria-haspopup="true"
+								aria-expanded="false"
+							>
+								Transaction
+							</a>
+							<div class="dropdown-menu" aria-labelledby="TrxMenuLink">
+								<a class="dropdown-item" href="#">Redemption</a>
+								<a class="dropdown-item" href="#">Capture New Transaction</a>
+							</div>
+						</li>
+					</ul>
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item">
+							<a id="logout" class="nav-link" href="{{ url_for('users.login_user') }}">Logout</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
 
-    <div class="content container mt-2">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
-            <a class="navbar-brand" href="#">Pricing Service</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                <a class="nav-item nav-link" href="{{ url_for('users.login_user') }}">Log in</a>
-                <a class="nav-item nav-link" href="{{ url_for('users.register_user') }}">Register</a>
-                </div>
-            </div>
-        </nav>
-        <div>
-            <img src="/static/jpg/shell.jpg" alt="">
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{category}}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+			{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+			<div id="message" class="alert alert-{{category}} alert-dismissible fade show" role="alert"><strong>{{message}}</strong><br /></div>
+			{% endfor %} {% endif %} {% endwith %}
 
-        <div class="mt-3">
-        {% block content %}
+			<div class="mt-3">
+				{% block content %} {% endblock %}
+			</div>
+		</div>
+		<!--		<script src="/static/js/jquery-3.4.1.min.js"></script>  -->
+		<script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+		<script>
+			$(document).ready(function () {
+				var dealercode = $('#dealercode');
+				$.ajax({
+					type: 'GET',
+					url: '/user_register',
+					success: function (data) {
+						$('div#title > p').text(data.dealer_name);
+					},
+					error: function () {
+						showMsg('Error loading Dealer Code');
+					},
+				});
+				if ($('.alert').show) $('.alert').delay(1000).hide(2000, 'swing');
 
-        {% endblock %}
-        </div>
-    </div>
-<!--
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>  
-    -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-
+				$('#logout').click(function () {
+					$.ajax({
+						type: 'GET',
+						url: '/logout',
+						success: function (savedInfo, textStatus, jqXHR) {
+							showMsg('Message : ' + savedInfo.message);
+						},
+						error: function (jqHXR, textStatus, errorThrown) {
+							showMsg(jqXHR.status + ' ' + errorThrown);
+						},
+					});
+				});
+			});
+		</script>
+	</body>
 </html>

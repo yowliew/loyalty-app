@@ -1,5 +1,7 @@
 # import for api
 from resources.register import UserRegister, DealerRegister
+from resources.validate import Validate
+from resources.misc import Logout
 from resources.item import Item, ItemList
 from resources.store import Store, StoreList
 
@@ -7,6 +9,7 @@ from resources.store import Store, StoreList
 from views.stores import store_blueprint
 from views.users import user_blueprint
 from views.dealers import dealer_blueprint
+from views.loyalty import loyalty_blueprint
 
 
 def api_end_route(api):
@@ -16,9 +19,12 @@ def api_end_route(api):
     api.add_resource(StoreList, "/stores")
     api.add_resource(UserRegister, "/user_register")
     api.add_resource(DealerRegister, "/dealer_register")
+    api.add_resource(Validate, "/validate_field")
+    api.add_resource(Logout, "/logout")
 
 
 def blueprint_end_route(app):
+    app.register_blueprint(loyalty_blueprint, url_prefix="/")
     app.register_blueprint(store_blueprint, url_prefix="/stores")
     app.register_blueprint(user_blueprint, url_prefix="/users")
     app.register_blueprint(dealer_blueprint, url_prefix="/dealers")
