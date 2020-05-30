@@ -1,4 +1,5 @@
 from typing import Dict
+from flask import session
 from common.db import db1
 from models.ancestor import Ancestor
 import common.errors as UserErrors
@@ -17,8 +18,8 @@ class UserModel(Ancestor, db1.Model):
     def __init__(self, username, password, dealer_code):
         self.username = username
         self.password = password
-        self.dealer_code = dealer_code  # TODO to be implemented
-        self.add_user = "001"  # TODO to be implemented
+        self.dealer_code = dealer_code
+        self.add_user = session['username']
         self.upd_user = ""  # TODO to be implemented
 
     def json(self) -> Dict:

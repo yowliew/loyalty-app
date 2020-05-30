@@ -1,0 +1,218 @@
+{% extends "base.html" %} {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trxstyle.css') }}" />
+<div class="form-header">
+	<p>Customer Log</p>
+</div>
+<div class="form">
+	<form class="form-trx">
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-2">
+				<input type="text" class="form-control" id="dealercode" name="dealercode" maxlength="4" placeholder="Dealer Code" disabled />
+				<label for="dealercode">Dealer Code</label>
+			</div>
+			<div class="form-label-group form-group col-sm-4">
+				<input
+					type="tel"
+					class="form-control"
+					name="custPhone"
+					id="custPhone"
+					placeholder="Customer Mobile Number"
+					maxlength="12"
+					required
+					style="font-weight: 700; font-size: x-large;"
+				/>
+				<label for="custPhone">Customer Mobile Number*</label>
+			</div>
+			<div class="form-label-group form-group col-sm-2">
+				<input
+					type="numbert"
+					class="form-control"
+					step="0.01"
+					max="42"
+					id="bodyTemp"
+					name="bodyTemp"
+					maxlength="5"
+					placeholder="Body Temperature"
+					onkeypress="return isFloat(event)"
+					style="font-weight: 700; font-size: x-large;"
+					required
+					aria-describedby="bodyTempHelp"
+				/>
+				<label for="bodyTemp">Body Temperature* &#8451;</label>
+				<small id="bodyTempHelp" class="form-text text-muted">
+					Customer body temperature should not exceed 36.9&#8451;
+				</small>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-12">
+				<input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" maxlength="255" required />
+				<label for="custName">Customer Name*</label>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-2">
+				<input type="text" class="form-control" name="custZip" id="custZip" maxlength="5" placeholder="Zipcode" required />
+				<label for="custZip">Zipcode</label>
+			</div>
+			<div class="form-label-group form-group col-sm-4">
+				<input type="email" class="form-control text-lowercase" id="custEmail" name="custEmail" maxlength="100" placeholder="Email Address" />
+				<label for="custEmail">Email Address</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<button type="submit" id="register" class="btn-lg btn-info">
+				Register
+			</button>
+		</div>
+	</form>
+</div>
+
+<script>
+	var dealerCode;
+
+	$(document).ready(function () {
+		$.ajax({
+			type: 'GET',
+			url: '/user_register',
+			success: function (data) {
+				dealeCode = data.dealer_code;
+				$('#dealercode').val(dealeCode);
+			},
+			error: function () {
+				showMsg('Error loading Dealer Code');
+			},
+		});
+
+		$('#register').on('click', function () {
+			event.preventDefault();
+
+			if (checkForm($('form')) || toStop) {
+				toStop = false;
+				return;
+			}
+
+			var gender = 'M';
+
+			if ($('#genderRadio1').is(':checked')) {
+				gender = 'F';
+			}
+
+			var info = {
+				dealer_code: $('#dealercode').val(),
+				cust_phone: $('#custPhone').val(),
+				cust_temp: $('#bodyTemp').val(),
+				cust_name: $('#custName').val(),
+				cust_zip: $('#custZip').val(),
+				cust_email: $('#custEmail').val(),
+			};
+
+			$.ajax({
+				type: 'POST',
+				url: '/covid_tracker',
+				data: info,
+				dataType: 'json',
+				success: function (result, textStatus, jqXHR) {
+					showMsg(result.message);
+					$('input').each(function () {
+						$(this).val('');
+					});
+					$('#dealercode').val(dealeCode);
+				},
+				error: function (jqHXR, textStatus, errorThrown) {
+					showMsg(jqHXR.status + ' ' + errorThrown);
+				},
+			});
+		});
+
+		$('#custPhone').blur(function () {
+			if (this.value != '') {
+				CallAjextWithReturn(this.id, this.value, function (data) {
+					if (data['cust_name'] !== '') {
+						$('#custName').val(data['cust_name']);
+						$('#custZip').val(data['cust_zip']);
+						$('#custEmail').val(data['cust_email']);
+					}
+				});
+			}
+		});
+
+		$('#custPhone').focusout(function () {
+			let phoneNum = $('#custPhone').val();
+			if (!isNumb(phoneNum) || phoneNum.length !== 10) {
+				showMsg('You have entered an invalid Mobile Number!');
+				$('#custPhone').focus();
+			}
+		});
+
+		$('#bodyTemp').focusout(function () {
+			if (this.value == '') {
+				showMsg('Please enter the customer temperature !');
+				$('#bodyTemp').focus();
+			} else if (this.value > 36.9) {
+				$('#bodyTemp').css('color', 'red');
+				showMsg('Do not allow customer to enter the shop !');
+			} else $('#bodyTemp').css('color', 'black');
+		});
+
+		$('#custZip').keyup(function () {
+			$('#custZip').autocomplete({
+				source: searchString['postcode'],
+				delay: 0,
+				maxShowItems: 6,
+				autoFocus: true,
+				minLength: 1,
+			});
+		});
+
+		$('#custZip').focusout(function () {
+			if (this.value !== '') {
+				if (!searchString['postcode'].includes(this.value)) {
+					showMsg('Please enter a valid Zipcode.');
+					$('#custZip').focus();
+				}
+			}
+		});
+
+		$('#custEmail').focusout(function () {
+			let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+			if (!this.value.match(mailformat) && this.value != '') {
+				showMsg('You have entered an invalid email address!');
+				$('#custEmail').focus();
+			}
+		});
+	});
+
+	// put all the Auto Complete Field into onLoad event
+	$(window).on('load', function () {
+		searchString['postcode'] = [];
+
+		autoCompleteField('postcode');
+	});
+
+	function checkForm(form) {
+		if (this.custPhone.value == '') {
+			showMsg('Please enter the Phone Number.');
+			$('#custPhone').focus();
+			return true;
+		}
+		if (this.bodyTemp.value == '') {
+			showMsg('Please enter the customer temperature !');
+			$('#bodyTemp').focus();
+		}
+		if (this.custName.value == '') {
+			showMsg('Please enter the Customer Name.');
+			$('#custName').focus();
+			return true;
+		}
+		// if (this.custZip.value == '') {
+		// 	showMsg('Please enter a valid Zipcode.');
+		// 	$('#custZip').focus();
+		// 	return true;
+		// }
+		return false;
+	}
+</script>
+
+{% endblock %}

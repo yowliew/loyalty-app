@@ -22,7 +22,7 @@
 				required
 				onblur="if(this.value != '') callAjax(this.id, this.value);"
 			/>
-			<label for="username">UserName</label>
+			<label for="username">UserName*</label>
 		</div>
 
 		<div class="form-label-group form-group">
@@ -35,7 +35,7 @@
 				required
 				onblur="if(this.value != '') callAjax(this.id, this.value);"
 			/>
-			<label for="password">Password</label>
+			<label for="password">Password*</label>
 		</div>
 		<br />
 		<div class="form-group">
@@ -103,12 +103,12 @@
 		}
 
 		if (this.username.value == '') {
-			showMsg('Please enter your Name.');
+			showMsg('Please enter the Name.');
 			this.username.focus();
 			return true;
 		}
 		if (this.password.value == '') {
-			showMsg('Please enter your Password.');
+			showMsg('Please enter the Password.');
 			this.password.focus();
 			return true;
 		}

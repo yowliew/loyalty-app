@@ -6,12 +6,19 @@
 		<meta http-equiv="Expires" content="0" />
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Loyalty</title>
+		<title>Redeemo</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}" />
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+		<script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/jquery-ui.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/jquery.ui.autocomplete.scroll.min.js') }}"></script>
 	</head>
-
 	<body>
+		<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+
 		<div
 			class="modal fade"
 			id="staticBackdrop"
@@ -24,7 +31,7 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header bg-secondary text-light">
-						<h5 class="modal-title" id="staticBackdrop">Message</h5>
+						<h5 class="modal-title" id="staticBackdrop1">Message</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
@@ -73,6 +80,7 @@
 							<div class="dropdown-menu" aria-labelledby="SetupMenuLink">
 								<a class="dropdown-item" href="{{ url_for('users.register_user') }}">New User</a>
 								<a class="dropdown-item" href="{{ url_for('dealers.register_dealer') }}">New Dealer</a>
+								<a class="dropdown-item" href="{{ url_for('customers.register_customer') }}">New Customer</a>
 							</div>
 						</li>
 						<li class="nav-item dropdown">
@@ -88,6 +96,7 @@
 								Transaction
 							</a>
 							<div class="dropdown-menu" aria-labelledby="TrxMenuLink">
+								<a class="dropdown-item" href="{{ url_for('covidtracker.covid_tracker') }}">Customer Log</a>
 								<a class="dropdown-item" href="#">Redemption</a>
 								<a class="dropdown-item" href="#">Capture New Transaction</a>
 							</div>
@@ -109,14 +118,11 @@
 				{% block content %} {% endblock %}
 			</div>
 		</div>
-		<!--		<script src="/static/js/jquery-3.4.1.min.js"></script>  -->
-		<script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+
 		<script>
 			$(document).ready(function () {
 				var dealercode = $('#dealercode');
+
 				$.ajax({
 					type: 'GET',
 					url: '/user_register',

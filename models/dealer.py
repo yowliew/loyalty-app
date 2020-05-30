@@ -1,4 +1,5 @@
 from typing import Dict
+from flask import session
 from common.db import db1
 from models.ancestor import Ancestor
 
@@ -23,7 +24,7 @@ class DealerModel(Ancestor, db1.Model):
         self.dealer_contact = dealer_contact
         self.dealer_phone = dealer_phone
         self.default = default
-        self.add_user = "0001"  # TODO to be implemented
+        self.add_user = session['username']
         self.upd_user = ""  # TODO to be implemented
 
     def json(self) -> Dict:

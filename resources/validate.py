@@ -3,6 +3,7 @@ from flask import jsonify
 import re
 from models.user import UserModel
 from models.dealer import DealerModel
+from models.customer import CustomerModel
 
 
 class Validate(Resource):
@@ -26,6 +27,7 @@ class Validate(Resource):
             "password": self.password,
             "dealercode": self.dealercode,
             "dealerregion": self.dealerregion,
+            "custPhone": self.custPhone,
             "nothing": lambda: 'XXX'
         }
         func = switcher.get(method, lambda: 'Invalid')
@@ -38,8 +40,8 @@ class Validate(Resource):
             return jsonify({"message": True})
 
     def dealerregion(self):
-        return jsonify({"message": True})  # TODO To be implemented once zipcpode master is ready
-
+        # TODO To be implemented once zipcpode master is ready
+        return jsonify({"message": True})
 
     def username(self):  # Return True only when passed field validate
 
@@ -54,3 +56,10 @@ class Validate(Resource):
             return jsonify({"message": False, "error": "Password must contains special character."})
         else:
             return jsonify({"message": True})
+
+    def custPhone(self):
+        row = CustomerModel.find_by_customer(self.value)
+        if row:
+            return jsonify({"cust_name": row.cust_name, "cust_zip": row.cust_zip, "cust_email": row.cust_email})
+        else:
+            return jsonify({"cust_name": ""})

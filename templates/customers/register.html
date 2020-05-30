@@ -1,0 +1,265 @@
+{% extends "base.html" %} {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/trxstyle.css') }}" />
+
+<div class="form-header">
+	<p>Register New Customer</p>
+</div>
+<div class="form">
+	<form class="form-trx">
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-2">
+				<input type="text" class="form-control" id="dealercode" name="dealercode" maxlength="4" placeholder="Dealer Code" disabled />
+				<label for="dealercode">Dealer Code</label>
+			</div>
+			<div class="form-label-group form-group col-sm-3">
+				<input type="tel" class="form-control" name="custPhone" id="custPhone" placeholder="Customer Mobile Number" maxlength="12" required />
+				<label for="custPhone">Customer Mobile Number*</label>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-12">
+				<input type="text" class="form-control" id="custName" name="custName" placeholder="Customer Name" maxlength="255" required />
+				<label for="custName">Customer Name*</label>
+			</div>
+		</div>
+		<div class="form-row">
+			<legend class="col-form-label col-sm-1 pt-0">Gender</legend>
+			<div class="form-group col-sm-1 pb-2">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="genderRadio" id="genderRadio1" value="F" checked />
+					<label class="form-check-label" for="genderRadio1">
+						Female
+					</label>
+				</div>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" name="genderRadio" id="genderRadio2" value="M" />
+					<label class="form-check-label" for="genderRadio2">
+						Male
+					</label>
+				</div>
+			</div>
+			<div class="form-label-group form-group col-sm-4">
+				<input type="email" class="form-control text-lowercase" id="custEmail" name="custEmail" maxlength="100" placeholder="Email Address" />
+				<label for="custEmail">Email Address</label>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-2">
+				<select id="vehicleType" name="vehicleType" class="form-control" placeholder="Vehicle Type" required>
+					<option></option>
+					<option>Sedan</option>
+					<option>Compact SUV</option>
+					<option>SUV</option>
+					<option>MPV</option>
+					<option>Bus</option>
+					<option>Tractor</option>
+					<option>Lorry</option>
+				</select>
+				<label for="vehicleType">Vehicle Type*</label>
+			</div>
+			<div class="form-label-group form-group col-sm-4">
+				<input
+					type="text"
+					class="form-control text-uppercase"
+					id="vehicleReg"
+					name="vehicleReg"
+					maxlength="10"
+					placeholder="Vehicle Registration Number"
+					required
+				/>
+				<label for="vehicleReg">Vehical Registration Number*</label>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-3">
+				<input type="text" class="form-control" name="custState" id="custState" maxlength="25" placeholder="State" required />
+				<label for="custState">State*</label>
+			</div>
+			<div class="form-label-group form-group col-sm-2">
+				<input type="text" class="form-control" name="custZip" id="custZip" maxlength="5" placeholder="Zipcode" required />
+				<label for="custZip">Zipcode*</label>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-5">
+				<input type="text" class="form-control" name="custAddress1" id="custAddress1" placeholder="Address" maxlength="50" />
+				<label for="custAddress1">Address</label>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-label-group form-group col-sm-5">
+				<input type="text" class="form-control" name="custAddress2" id="custAddress2" placeholder="Address" maxlength="50" />
+				<label for="custAddress2">Address</label>
+			</div>
+		</div>
+		<div class="form-group">
+			<button type="submit" id="register" class="btn btn-info">
+				Register
+			</button>
+		</div>
+	</form>
+</div>
+
+<script>
+	var dealerCode;
+
+	$(document).ready(function () {
+		$.ajax({
+			type: 'GET',
+			url: '/user_register',
+			success: function (data) {
+				dealeCode = data.dealer_code;
+				$('#dealercode').val(dealeCode);
+			},
+			error: function () {
+				showMsg('Error loading Dealer Code');
+			},
+		});
+
+		$('#register').on('click', function () {
+			event.preventDefault();
+
+			if (checkForm($('form')) || toStop) {
+				toStop = false;
+				return;
+			}
+
+			var gender = 'M';
+
+			if ($('#genderRadio1').is(':checked')) {
+				gender = 'F';
+			}
+
+			var info = {
+				dealer_code: $('#dealercode').val(),
+				cust_phone: $('#custPhone').val(),
+				cust_name: $('#custName').val(),
+				gender_type: gender,
+				cust_email: $('#custEmail').val(),
+				vehicle_type: $('#vehicleType').val(),
+				vehicle_reg: $('#vehicleReg').val(),
+				address_1: $('#custAddress1').val(),
+				address_2: $('#custAddress2').val(),
+				cust_state: $('#custState').val(),
+				cust_zip: $('#custZip').val(),
+			};
+
+			$.ajax({
+				type: 'POST',
+				url: '/customer_register',
+				data: info,
+				dataType: 'json',
+				success: function (result, textStatus, jqXHR) {
+					showMsg(result.message);
+					$('input').each(function () {
+						$(this).val('');
+					});
+					$('#genderRadio1').checked = true;
+					$('#vehicleType').val('');
+					$('#dealercode').val(dealeCode);
+				},
+				error: function (jqHXR, textStatus, errorThrown) {
+					showMsg(jqHXR.status + ' ' + errorThrown);
+				},
+			});
+		});
+
+		$('#custPhone').focusout(function () {
+			let phoneNum = $('#custPhone').val();
+			if (!isNumb(phoneNum) || phoneNum.length !== 10) {
+				showMsg('You have entered an invalid Mobile Number!');
+				$('#custPhone').focus();
+			}
+		});
+
+		$('#custEmail').focusout(function () {
+			let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+			if (!this.value.match(mailformat)) {
+				showMsg('You have entered an invalid email address!');
+				$('#custEmail').focus();
+			}
+		});
+
+		$('#custState').keyup(function () {
+			$('#custState').autocomplete({
+				source: searchString['state'],
+				delay: 0,
+				maxShowItems: 5,
+				autoFocus: true,
+				minLength: 1,
+			});
+		});
+
+		$('#custState').focusout(function () {
+			if (!searchString['state'].includes(this.value)) {
+				showMsg('Please enter a valid State Code.');
+				$('#custState').focus();
+			}
+		});
+
+		$('#custZip').keyup(function () {
+			$('#custZip').autocomplete({
+				source: searchString['postcode'],
+				delay: 0,
+				maxShowItems: 6,
+				autoFocus: true,
+				minLength: 1,
+			});
+		});
+
+		$('#custZip').focusout(function () {
+			if (!searchString['postcode'].includes(this.value)) {
+				showMsg('Please enter a valid Zipcode.');
+				$('#custZip').focus();
+			}
+		});
+	});
+
+	// put all the Auto Complete Field into onLoad event
+	$(window).on('load', function () {
+		searchString['state'] = [];
+		searchString['postcode'] = [];
+
+		autoCompleteField('state');
+		autoCompleteField('postcode');
+	});
+
+	function checkForm(form) {
+		if (this.custPhone.value == '') {
+			showMsg('Please enter the Phone Number.');
+			this.custPhone.focus();
+			return true;
+		}
+		if (this.custName.value == '') {
+			showMsg('Please enter the Customer Name.');
+			this.custName.focus();
+			return true;
+		}
+		if (this.vehicleType.value == '') {
+			showMsg('Please choose a Vehicle Type.');
+			this.vehicleType.focus();
+			return true;
+		}
+		if (this.vehicleReg.value == '') {
+			showMsg('Please enter the Vehicle Registration Number.');
+			this.vehicleReg.focus();
+			return true;
+		}
+		if (this.custState.value == '') {
+			showMsg('Please enter a valid State Code');
+			this.custState.focus();
+			return true;
+		}
+		if (this.custZip.value == '') {
+			showMsg('Please enter a valid Zipcode.');
+			this.custZip.focus();
+			return true;
+		}
+		return false;
+	}
+</script>
+{% endblock %}
